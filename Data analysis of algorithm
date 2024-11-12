@@ -1,0 +1,260 @@
+exp1 DAA:- Write a program non-recursive and recursive program to calculate Fibonacci numbers and analyze their time and space complexity
+
+
+[ ]
+# Program to display the Fibonacci sequence up to n-th term
+nterms = int(input("Enter number of terms "))
+# first two terms
+n1, n2 = 0, 1
+count = 0
+# check if the number of terms is valid
+if nterms <= 0:
+    print("Please enter a positive integer")
+# if there is only one term, return n1
+elif nterms == 1:
+    print("Fibonacci sequence upto", nterms,":")
+    print(n1)
+# generate fibonacci sequence
+else:
+    print("Fibonacci sequence:")
+    while count < nterms:
+        print(n1)
+        nth = n1 + n2
+       # update values
+        n1 = n2
+        n2 = nth
+        count += 1
+
+
+Enter number of terms 5
+Fibonacci sequence:
+0
+1
+1
+2
+3
+
+[ ]
+from google.colab import drive
+drive.mount('/content/drive')
+
+[ ]
+def fibonacci(n):
+    if(n <= 1):
+        return n
+    else:
+        return(fibonacci(n-1) + fibonacci(n-2))
+n = int(input("Enter number of terms:"))
+print("Fibonacci sequence:")
+for i in range(n):
+    print(fibonacci(i))
+
+Enter number of terms:5
+Fibonacci sequence:
+0
+1
+1
+2
+3
+EXP 2:- Write a program to implement Huffman Encoding using a greedy strategy.
+
+
+[ ]
+# A Huffman Tree Node
+import heapq
+
+class node:
+    def __init__(self, freq, symbol, left=None, right=None):
+        # frequency of symbol
+        self.freq = freq
+
+        # symbol name (character)
+        self.symbol = symbol
+
+        # node left of current node
+        self.left = left
+
+        # node right of current node
+        self.right = right
+
+        # tree direction (0/1)
+        self.huff = ''
+
+    def __lt__(self, nxt):
+        return self.freq < nxt.freq
+
+
+# utility function to print huffman
+# codes for all symbols in the newly
+# created Huffman tree
+def printNodes(node, val=''):
+
+    # huffman code for current node
+    newVal = val + str(node.huff)
+
+    # if node is not an edge node
+    # then traverse inside it
+    if(node.left):
+        printNodes(node.left, newVal)
+    if(node.right):
+        printNodes(node.right, newVal)
+
+        # if node is edge node then
+        # display its huffman code
+    if(not node.left and not node.right):
+        print(f"{node.symbol} -> {newVal}")
+
+
+# characters for huffman tree
+chars = ['a', 'b', 'c', 'd', 'e', 'f']
+
+# frequency of characters
+freq = [ 5, 9, 12, 13, 16, 45]
+
+# list containing unused nodes
+nodes = []
+
+# converting characters and frequencies
+# into huffman tree nodes
+for x in range(len(chars)):
+    heapq.heappush(nodes, node(freq[x], chars[x]))
+
+while len(nodes) > 1:
+
+    # sort all the nodes in ascending order
+    # based on their frequency
+    left = heapq.heappop(nodes)
+    right = heapq.heappop(nodes)
+
+    # assign directional value to these nodes
+    left.huff = 0
+    right.huff = 1
+
+    # combine the 2 smallest nodes to create
+    # new node as their parent
+    newNode = node(left.freq+right.freq, left.symbol+right.symbol, left, right)
+
+    heapq.heappush(nodes, newNode)
+
+# Huffman Tree is ready!
+printNodes(nodes[0])
+
+f -> 0
+c -> 100
+d -> 101
+a -> 1100
+b -> 1101
+e -> 111
+EXP 3:-Write a program to solve a fractional Knapsack problem using a greedy method.
+
+class Item:
+    def __init__(self, value, weight):
+        self.value = value
+        self.weight = weight
+
+def fractionalKnapsack(W, arr):
+    # Sorting Items on the basis of value-to-weight ratio
+    arr.sort(key=lambda x: (x.value / x.weight), reverse=True)
+    
+    # Result (total value in Knapsack)
+    finalvalue = 0.0
+    
+    # Looping through all items
+    for item in arr:
+        # If adding the item won't exceed capacity, add it completely
+        if item.weight <= W:
+            W -= item.weight
+            finalvalue += item.value
+        else:
+            # Add fractional part of the item that fits
+            finalvalue += item.value * W / item.weight
+            break
+    
+    # Returning final value
+    return finalvalue
+
+# Driver code with user input
+if __name__ == "__main__":
+    # Input the number of items
+    n = int(input("Enter the number of items: "))
+    arr = []
+
+    # Input value and weight for each item
+    for i in range(n):
+        value = float(input(f"Enter value of item {i+1}: "))
+        weight = float(input(f"Enter weight of item {i+1}: "))
+        arr.append(Item(value, weight))
+
+    # Input capacity of the knapsack
+    W = float(input("Enter the capacity of the knapsack: "))
+
+    # Function call
+    max_val = fractionalKnapsack(W, arr)
+    print("Maximum value in Knapsack =", max_val)
+
+EXP 4:-Write a program to solve a 0-1 Knapsack problem using dynamic programming or branch and bound strategy
+
+
+[ ]
+# A naive recursive implementation
+# of 0-1 Knapsack Problem
+
+# Returns the maximum value that
+# can be put in a knapsack of
+# capacity W
+
+
+def knapSack(W, wt, val, n):
+
+    # Base Case
+    if n == 0 or W == 0:
+        return 0
+
+    # If weight of the nth item is
+    # more than Knapsack of capacity W,
+    # then this item cannot be included
+    # in the optimal solution
+    if (wt[n-1] > W):
+        return knapSack(W, wt, val, n-1)
+
+    # return the maximum of two cases:
+    # (1) nth item included
+    # (2) not included
+    else:
+        return max(
+            val[n-1] + knapSack(
+                W-wt[n-1], wt, val, n-1),
+            knapSack(W, wt, val, n-1))
+
+# end of function knapSack
+
+
+#Driver Code
+val = [60, 100, 120]
+wt = [10, 20, 30]
+W = 50
+n = len(val)
+print(knapSack(W, wt, val, n))
+
+
+220
+EXP 5:-Design n-Queens matrix having first Queen placed. Use backtracking to place remaining Queens to generate the final n-queen’s matrix.
+
+
+[ ]
+# Python3 program to solve N Queen
+# Problem using backtracking
+global N
+N = 4
+
+def printSolution(board):
+	for i in range(N):
+		for j in range(N):
+			print(board[i][j], end = " ")
+		print()
+
+0 0 1 0 
+1 0 0 0 
+0 0 0 1 
+0 1 0 0 
+True
